@@ -79,8 +79,9 @@ pub fn draw_text_mut<'a, C>(
 /// `scale` is augmented font scaling on both the x and y axis (in pixels).
 ///
 /// Note that this function *does not* support newlines, you must do this manually.
+#[must_use = "the function does not modify the original image"]
 pub fn draw_text<'a, I>(
-    image: &'a mut I,
+    image: &'a I,
     color: I::Pixel,
     x: i32,
     y: i32,
@@ -91,7 +92,6 @@ pub fn draw_text<'a, I>(
 where
     I: GenericImage,
     <I::Pixel as Pixel>::Subpixel: ValueInto<f32> + Clamp<f32>,
-    I::Pixel: 'static,
 {
     let mut out = ImageBuffer::new(image.width(), image.height());
     out.copy_from(image, 0, 0).unwrap();

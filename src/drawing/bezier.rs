@@ -8,6 +8,7 @@ use std::i32;
 /// Draws a cubic Bézier curve on a new copy of an image.
 ///
 /// Draws as much of the curve as lies within image bounds.
+#[must_use = "the function does not modify the original image"]
 pub fn draw_cubic_bezier_curve<I>(
     image: &I,
     start: (f32, f32),
@@ -18,7 +19,6 @@ pub fn draw_cubic_bezier_curve<I>(
 ) -> Image<I::Pixel>
 where
     I: GenericImage,
-    I::Pixel: 'static,
 {
     let mut out = ImageBuffer::new(image.width(), image.height());
     out.copy_from(image, 0, 0).unwrap();
@@ -38,7 +38,6 @@ pub fn draw_cubic_bezier_curve_mut<C>(
     color: C::Pixel,
 ) where
     C: Canvas,
-    C::Pixel: 'static,
 {
     // Bezier Curve function from: https://pomax.github.io/bezierinfo/#control
     let cubic_bezier_curve = |t: f32| {

@@ -12,10 +12,10 @@ use std::i32;
 /// Draws as much of a filled polygon as lies within image bounds. The provided
 /// list of points should be an open path, i.e. the first and last points must not be equal.
 /// An implicit edge is added from the last to the first point in the slice.
+#[must_use = "the function does not modify the original image"]
 pub fn draw_polygon<I>(image: &I, poly: &[Point<i32>], color: I::Pixel) -> Image<I::Pixel>
 where
     I: GenericImage,
-    I::Pixel: 'static,
 {
     let mut out = ImageBuffer::new(image.width(), image.height());
     out.copy_from(image, 0, 0).unwrap();
@@ -31,7 +31,6 @@ where
 pub fn draw_polygon_mut<C>(canvas: &mut C, poly: &[Point<i32>], color: C::Pixel)
 where
     C: Canvas,
-    C::Pixel: 'static,
 {
     if poly.is_empty() {
         return;
@@ -57,7 +56,7 @@ where
     y_min = max(0, min(y_min, height as i32 - 1));
     y_max = max(0, min(y_max, height as i32 - 1));
 
-    let mut closed: Vec<Point<i32>> = poly.iter().copied().collect();
+    let mut closed: Vec<Point<i32>> = poly.to_vec();
     closed.push(poly[0]);
 
     let edges: Vec<&[Point<i32>]> = closed.windows(2).collect();

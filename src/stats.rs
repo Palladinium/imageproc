@@ -15,7 +15,7 @@ pub struct ChannelHistogram {
 /// Returns a vector of per-channel histograms.
 pub fn histogram<P>(image: &Image<P>) -> ChannelHistogram
 where
-    P: Pixel<Subpixel = u8> + 'static,
+    P: Pixel<Subpixel = u8>,
 {
     let mut hist = vec![[0u32; 256]; P::CHANNEL_COUNT as usize];
 
@@ -37,7 +37,7 @@ pub struct CumulativeChannelHistogram {
 /// Returns per-channel cumulative histograms.
 pub fn cumulative_histogram<P>(image: &Image<P>) -> CumulativeChannelHistogram
 where
-    P: Pixel<Subpixel = u8> + 'static,
+    P: Pixel<Subpixel = u8>,
 {
     let mut hist = histogram(image);
 
@@ -89,7 +89,7 @@ where
 pub fn percentile(image: &GrayImage, p: u8) -> u8 {
     assert!(p <= 100, "requested percentile must be <= 100");
 
-    let cum_hist = cumulative_histogram(&image).channels[0];
+    let cum_hist = cumulative_histogram(image).channels[0];
     let total = cum_hist[255] as u64;
 
     for i in 0..256 {

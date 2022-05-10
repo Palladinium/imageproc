@@ -105,9 +105,10 @@ use std::cmp::{max, min};
 /// assert_pixels_eq!(median_filter(&image, 2, 1), filtered);
 /// # }
 /// ```
+#[must_use = "the function does not modify the original image"]
 pub fn median_filter<P>(image: &Image<P>, x_radius: u32, y_radius: u32) -> Image<P>
 where
-    P: Pixel<Subpixel = u8> + 'static,
+    P: Pixel<Subpixel = u8>,
 {
     let (width, height) = image.dimensions();
 
@@ -119,16 +120,16 @@ where
     let rx = x_radius as i32;
     let ry = y_radius as i32;
 
-    let mut hist = initialise_histogram_for_top_left_pixel(&image, x_radius, y_radius);
-    slide_down_column(&mut hist, &image, &mut out, 0, rx, ry);
+    let mut hist = initialise_histogram_for_top_left_pixel(image, x_radius, y_radius);
+    slide_down_column(&mut hist, image, &mut out, 0, rx, ry);
 
     for x in 1..width {
         if x % 2 == 0 {
-            slide_right(&mut hist, &image, x, 0, rx, ry);
-            slide_down_column(&mut hist, &image, &mut out, x, rx, ry);
+            slide_right(&mut hist, image, x, 0, rx, ry);
+            slide_down_column(&mut hist, image, &mut out, x, rx, ry);
         } else {
-            slide_right(&mut hist, &image, x, height - 1, rx, ry);
-            slide_up_column(&mut hist, &image, &mut out, x, rx, ry);
+            slide_right(&mut hist, image, x, height - 1, rx, ry);
+            slide_up_column(&mut hist, image, &mut out, x, rx, ry);
         }
     }
     out
@@ -140,7 +141,7 @@ fn initialise_histogram_for_top_left_pixel<P>(
     y_radius: u32,
 ) -> HistSet
 where
-    P: Pixel<Subpixel = u8> + 'static,
+    P: Pixel<Subpixel = u8>,
 {
     let (width, height) = image.dimensions();
     let kernel_size = (2 * x_radius + 1) * (2 * y_radius + 1);
@@ -165,7 +166,7 @@ where
 
 fn slide_right<P>(hist: &mut HistSet, image: &Image<P>, x: u32, y: u32, rx: i32, ry: i32)
 where
-    P: Pixel<Subpixel = u8> + 'static,
+    P: Pixel<Subpixel = u8>,
 {
     let (width, height) = image.dimensions();
 
@@ -188,7 +189,7 @@ fn slide_down_column<P>(
     rx: i32,
     ry: i32,
 ) where
-    P: Pixel<Subpixel = u8> + 'static,
+    P: Pixel<Subpixel = u8>,
 {
     let (width, height) = image.dimensions();
     hist.set_to_median(out, x, 0);
@@ -216,7 +217,7 @@ fn slide_up_column<P>(
     rx: i32,
     ry: i32,
 ) where
-    P: Pixel<Subpixel = u8> + 'static,
+    P: Pixel<Subpixel = u8>,
 {
     let (width, height) = image.dimensions();
     hist.set_to_median(out, x, height - 1);
@@ -264,7 +265,7 @@ impl HistSet {
 
     fn incr<P>(&mut self, image: &Image<P>, x: u32, y: u32)
     where
-        P: Pixel<Subpixel = u8> + 'static,
+        P: Pixel<Subpixel = u8>,
     {
         unsafe {
             let pixel = image.unsafe_get_pixel(x, y);
@@ -279,7 +280,7 @@ impl HistSet {
 
     fn decr<P>(&mut self, image: &Image<P>, x: u32, y: u32)
     where
-        P: Pixel<Subpixel = u8> + 'static,
+        P: Pixel<Subpixel = u8>,
     {
         unsafe {
             let pixel = image.unsafe_get_pixel(x, y);
@@ -294,7 +295,7 @@ impl HistSet {
 
     fn set_to_median<P>(&self, image: &mut Image<P>, x: u32, y: u32)
     where
-        P: Pixel<Subpixel = u8> + 'static,
+        P: Pixel<Subpixel = u8>,
     {
         unsafe {
             let target = image.get_pixel_mut(x, y);

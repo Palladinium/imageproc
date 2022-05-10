@@ -49,6 +49,7 @@ use std::f32;
 /// let image = gray_bench_image(500, 500);
 /// let filtered = bilateral_filter(&image, 10, 10., 3.);
 /// ```
+#[must_use = "the function does not modify the original image"]
 pub fn bilateral_filter(
     image: &GrayImage,
     window_size: u32,
@@ -57,7 +58,7 @@ pub fn bilateral_filter(
 ) -> Image<Luma<u8>> {
     /// Un-normalized Gaussian weights for look-up tables.
     fn gaussian_weight(x: f32, sigma_squared: f32) -> f32 {
-        return (-0.5 * x.powi(2) / sigma_squared).exp();
+        (-0.5 * x.powi(2) / sigma_squared).exp()
     }
 
     /// Effectively a meshgrid command with flattened outputs.
@@ -78,7 +79,7 @@ pub fn bilateral_filter(
         for i in window_range {
             rr.append(&mut vec![i; (window_size + 1) as usize]);
         }
-        return (rr, cc);
+        (rr, cc)
     }
 
     /// Create look-up table of Gaussian weights for color dimension.
@@ -162,6 +163,7 @@ pub fn bilateral_filter(
 // TODO: for small kernels we probably want to do the convolution
 // TODO: directly instead of using an integral image.
 // TODO: more formats!
+#[must_use = "the function does not modify the original image"]
 pub fn box_filter(image: &GrayImage, x_radius: u32, y_radius: u32) -> Image<Luma<u8>> {
     let (width, height) = image.dimensions();
     let mut out = ImageBuffer::new(width, height);
@@ -240,9 +242,9 @@ impl<'a, K: Num + Copy + 'a> Kernel<'a, K> {
     /// at type K, and the results converted to pixel Q via f. Pads by continuity.
     pub fn filter<P, F, Q>(&self, image: &Image<P>, mut f: F) -> Image<Q>
     where
-        P: Pixel + 'static,
+        P: Pixel,
         <P as Pixel>::Subpixel: ValueInto<K>,
-        Q: Pixel + 'static,
+        Q: Pixel,
         F: FnMut(&mut Q::Subpixel, K),
     {
         let (width, height) = image.dimensions();
@@ -304,9 +306,10 @@ fn gaussian_kernel_f32(sigma: f32) -> Vec<f32> {
 ///
 /// Panics if `sigma <= 0.0`.
 // TODO: Integer type kernel, approximations via repeated box filter.
+#[must_use = "the function does not modify the original image"]
 pub fn gaussian_blur_f32<P>(image: &Image<P>, sigma: f32) -> Image<P>
 where
-    P: Pixel + 'static,
+    P: Pixel,
     <P as Pixel>::Subpixel: ValueInto<f32> + Clamp<f32>,
 {
     assert!(sigma > 0.0, "sigma must be > 0.0");
@@ -316,9 +319,10 @@ where
 
 /// Returns 2d correlation of view with the outer product of the 1d
 /// kernels `h_kernel` and `v_kernel`.
+#[must_use = "the function does not modify the original image"]
 pub fn separable_filter<P, K>(image: &Image<P>, h_kernel: &[K], v_kernel: &[K]) -> Image<P>
 where
-    P: Pixel + 'static,
+    P: Pixel,
     <P as Pixel>::Subpixel: ValueInto<K> + Clamp<K>,
     K: Num + Copy,
 {
@@ -328,9 +332,10 @@ where
 
 /// Returns 2d correlation of an image with the outer product of the 1d
 /// kernel filter with itself.
+#[must_use = "the function does not modify the original image"]
 pub fn separable_filter_equal<P, K>(image: &Image<P>, kernel: &[K]) -> Image<P>
 where
-    P: Pixel + 'static,
+    P: Pixel,
     <P as Pixel>::Subpixel: ValueInto<K> + Clamp<K>,
     K: Num + Copy,
 {
@@ -339,11 +344,12 @@ where
 
 /// Returns 2d correlation of an image with a 3x3 row-major kernel. Intermediate calculations are
 /// performed at type K, and the results clamped to subpixel type S. Pads by continuity.
+#[must_use = "the function does not modify the original image"]
 pub fn filter3x3<P, K, S>(image: &Image<P>, kernel: &[K]) -> Image<ChannelMap<P, S>>
 where
     P::Subpixel: ValueInto<K>,
-    S: Clamp<K> + Primitive + 'static,
-    P: WithChannel<S> + 'static,
+    S: Clamp<K> + Primitive,
+    P: WithChannel<S>,
     K: Num + Copy,
 {
     let kernel = Kernel::new(kernel, 3, 3);
@@ -353,9 +359,10 @@ where
 /// Returns horizontal correlations between an image and a 1d kernel.
 /// Pads by continuity. Intermediate calculations are performed at
 /// type K.
+#[must_use = "the function does not modify the original image"]
 pub fn horizontal_filter<P, K>(image: &Image<P>, kernel: &[K]) -> Image<P>
 where
-    P: Pixel + 'static,
+    P: Pixel,
     <P as Pixel>::Subpixel: ValueInto<K> + Clamp<K>,
     K: Num + Copy,
 {
@@ -448,9 +455,10 @@ where
 
 /// Returns horizontal correlations between an image and a 1d kernel.
 /// Pads by continuity.
+#[must_use = "the function does not modify the original image"]
 pub fn vertical_filter<P, K>(image: &Image<P>, kernel: &[K]) -> Image<P>
 where
-    P: Pixel + 'static,
+    P: Pixel,
     <P as Pixel>::Subpixel: ValueInto<K> + Clamp<K>,
     K: Num + Copy,
 {
@@ -938,7 +946,7 @@ mod tests {
     /// We can also use this to validate correctnes of any implementations we add here.
     fn gaussian_baseline_rgb<I>(image: &I, stdev: f32) -> Image<Rgb<u8>>
     where
-        I: GenericImage<Pixel = Rgb<u8>> + 'static,
+        I: GenericImage<Pixel = Rgb<u8>>,
     {
         blur(image, stdev)
     }

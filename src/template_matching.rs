@@ -56,12 +56,12 @@ pub fn match_template(
     MatchTemplateMethod::SumOfSquaredErrorsNormalized
     | MatchTemplateMethod::CrossCorrelationNormalized };
     let image_squared_integral = if should_normalize {
-        Some(integral_squared_image(&image))
+        Some(integral_squared_image(image))
     } else {
         None
     };
     let template_squared_sum = if should_normalize {
-        Some(sum_squares(&template))
+        Some(sum_squares(template))
     } else {
         None
     };
@@ -147,7 +147,7 @@ pub struct Extremes<T> {
 /// If there are multiple such values then the lexicographically smallest is returned.
 pub fn find_extremes<T>(image: &Image<Luma<T>>) -> Extremes<T>
 where
-    T: Primitive + 'static,
+    T: Primitive,
 {
     assert!(
         image.width() > 0 && image.height() > 0,

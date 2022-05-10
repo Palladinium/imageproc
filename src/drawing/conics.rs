@@ -16,6 +16,7 @@ use std::i32;
 /// The ellipse is axis-aligned and satisfies the following equation:
 ///
 /// (`x^2 / width_radius^2) + (y^2 / height_radius^2) = 1`
+#[must_use = "the function does not modify the original image"]
 pub fn draw_hollow_ellipse<I>(
     image: &I,
     center: (i32, i32),
@@ -25,7 +26,6 @@ pub fn draw_hollow_ellipse<I>(
 ) -> Image<I::Pixel>
 where
     I: GenericImage,
-    I::Pixel: 'static,
 {
     let mut out = ImageBuffer::new(image.width(), image.height());
     out.copy_from(image, 0, 0).unwrap();
@@ -51,7 +51,6 @@ pub fn draw_hollow_ellipse_mut<C>(
     color: C::Pixel,
 ) where
     C: Canvas,
-    C::Pixel: 'static,
 {
     // Circle drawing algorithm is faster, so use it if the given ellipse is actually a circle.
     if width_radius == height_radius {
@@ -79,6 +78,7 @@ pub fn draw_hollow_ellipse_mut<C>(
 /// The ellipse is axis-aligned and satisfies the following equation:
 ///
 /// `(x^2 / width_radius^2) + (y^2 / height_radius^2) <= 1`
+#[must_use = "the function does not modify the original image"]
 pub fn draw_filled_ellipse<I>(
     image: &I,
     center: (i32, i32),
@@ -88,7 +88,6 @@ pub fn draw_filled_ellipse<I>(
 ) -> Image<I::Pixel>
 where
     I: GenericImage,
-    I::Pixel: 'static,
 {
     let mut out = ImageBuffer::new(image.width(), image.height());
     out.copy_from(image, 0, 0).unwrap();
@@ -114,7 +113,6 @@ pub fn draw_filled_ellipse_mut<C>(
     color: C::Pixel,
 ) where
     C: Canvas,
-    C::Pixel: 'static,
 {
     // Circle drawing algorithm is faster, so use it if the given ellipse is actually a circle.
     if width_radius == height_radius {
@@ -193,6 +191,7 @@ where
 /// Draws the outline of a circle on a new copy of an image.
 ///
 /// Draw as much of the circle as lies inside the image bounds.
+#[must_use = "the function does not modify the original image"]
 pub fn draw_hollow_circle<I>(
     image: &I,
     center: (i32, i32),
@@ -201,7 +200,6 @@ pub fn draw_hollow_circle<I>(
 ) -> Image<I::Pixel>
 where
     I: GenericImage,
-    I::Pixel: 'static,
 {
     let mut out = ImageBuffer::new(image.width(), image.height());
     out.copy_from(image, 0, 0).unwrap();
@@ -215,7 +213,6 @@ where
 pub fn draw_hollow_circle_mut<C>(canvas: &mut C, center: (i32, i32), radius: i32, color: C::Pixel)
 where
     C: Canvas,
-    C::Pixel: 'static,
 {
     let mut x = 0i32;
     let mut y = radius;
@@ -249,7 +246,6 @@ where
 pub fn draw_filled_circle_mut<C>(canvas: &mut C, center: (i32, i32), radius: i32, color: C::Pixel)
 where
     C: Canvas,
-    C::Pixel: 'static,
 {
     let mut x = 0i32;
     let mut y = radius;
@@ -296,6 +292,7 @@ where
 /// Draws a circle and its contents on a new copy of the image.
 ///
 /// Draws as much of a circle and its contents as lies inside the image bounds.
+#[must_use = "the function does not modify the original image"]
 pub fn draw_filled_circle<I>(
     image: &I,
     center: (i32, i32),
@@ -304,7 +301,6 @@ pub fn draw_filled_circle<I>(
 ) -> Image<I::Pixel>
 where
     I: GenericImage,
-    I::Pixel: 'static,
 {
     let mut out = ImageBuffer::new(image.width(), image.height());
     out.copy_from(image, 0, 0).unwrap();
