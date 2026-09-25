@@ -197,7 +197,7 @@ where
     let mut data = Vec::with_capacity(width as usize * height as usize * Q::CHANNEL_COUNT as usize);
 
     // Sadly we cannot use `IndexedParallelIterator::collect_into_vec`, nor can we avoid
-    // allocating with the the inner `to_vec`
+    // allocating with the inner `to_vec`
     data.par_extend(
         image
             .par_pixels()
@@ -289,7 +289,7 @@ where
     let mut data = Vec::with_capacity(width as usize * height as usize * Q::CHANNEL_COUNT as usize);
 
     // Sadly we cannot use `IndexedParallelIterator::collect_into_vec`, nor can we avoid
-    // allocating with the the inner `to_vec`
+    // allocating with the inner `to_vec`
     data.par_extend(
         image
             .par_enumerate_pixels()
